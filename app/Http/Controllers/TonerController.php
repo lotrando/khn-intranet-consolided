@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Toner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TonerController extends Controller
 {
@@ -14,7 +15,7 @@ class TonerController extends Controller
      */
     public function index()
     {
-        //
+        return Toner::all();
     }
 
     /**
@@ -35,7 +36,34 @@ class TonerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = array(
+
+            'type'              =>  'required',
+            'department'        =>  'required',
+            'pieces'            =>  'required',
+            'date'              =>  'required',
+            'user'              =>  'required'
+
+        );
+
+        $error = Validator::make($request->all(), $rules);
+
+        if ($error->fails()) {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
+
+        $form_data = array(
+
+            'type'              =>  $request->type,
+            'department'        =>  $request->department,
+            'pieces'            =>  $request->pieces,
+            'date'              =>  $request->date,
+            'user'              =>  $request->user
+        );
+
+        Toner::create($form_data);
+
+        return response()->json(['success' => 'Toner vydán a uložen do databáze']);
     }
 
     /**
